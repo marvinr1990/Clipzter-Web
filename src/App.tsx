@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './styles.css';
 
 interface ClipboardItem {
@@ -22,6 +22,7 @@ const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     localStorage.setItem('clipboard-items', JSON.stringify(items));
@@ -67,6 +68,40 @@ const App: React.FC = () => {
     }
   };
 
+  const exportBackup = () => {
+    const dataStr = JSON.stringify(items, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `clipzter-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const importBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed) && window.confirm(`Found ${parsed.length} entries. This will replace your current list. Continue?`)) {
+          setItems(parsed);
+        }
+      } catch (err) {
+        console.error('Failed to parse backup file', err);
+        alert('Failed to parse backup file.');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
   const filteredItems = items.filter(item =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -79,6 +114,18 @@ const App: React.FC = () => {
           {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
       </header>
+
+      <div className="data-controls">
+        <button onClick={exportBackup}>Export Backup</button>
+        <button onClick={() => fileInputRef.current?.click()}>Import Backup</button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={importBackup}
+          accept=".json"
+          style={{ display: 'none' }}
+        />
+      </div>
 
       <div className="controls">
         <input

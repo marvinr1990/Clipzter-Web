@@ -51,6 +51,13 @@ header button {
   transform: translateY(-50%);
 }
 
+.data-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
 .controls {
   margin-bottom: 20px;
   display: flex;

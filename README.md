@@ -10,6 +10,7 @@ Clipzter Web is a lightweight, web-based clipboard manager built with React and 
 *   **Dark Mode:** Toggle between Light and Dark themes for comfortable viewing.
 *   **Persistence:** Your data is saved locally in your browser (LocalStorage), so it survives page reloads.
 *   **Management:** Delete old or unused entries with a confirmation prompt.
+*   **Backup & Restore:** Export your saved clips to a JSON file and restore them later or on another device.
 
 ## Getting Started
 
