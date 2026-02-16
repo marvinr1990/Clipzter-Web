@@ -25,7 +25,7 @@ You can install Clipzter Web locally in two ways:
 #### Option 1: Clone the Repository (Recommended)
 
 ```bash
-git clone https://github.com/<your-username>/clipzter-web.git
+git clone https://github.com/marvinr1990/clipzter-web.git
 cd clipzter-web
 npm install
 ```
