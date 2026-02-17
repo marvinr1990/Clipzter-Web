@@ -5,6 +5,7 @@ Clipzter Web is a lightweight, web-based clipboard manager built with React and 
 ## Features
 
 * **Save Snippets**: Quickly add new text entries with an optional title.
+* **Edit Entries**: Modify the title and content of your saved snippets.
 * **Copy & Paste**: One-click copy functionality to retrieve your saved text.
 * **Search**: Filter your saved entries by title to find what you need fast.
 * **Dark Mode**: Toggle between Light and Dark themes for comfortable viewing.

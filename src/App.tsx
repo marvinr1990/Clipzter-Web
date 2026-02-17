@@ -22,6 +22,9 @@ const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -51,6 +54,30 @@ const App: React.FC = () => {
     setContent('');
     setIsFormVisible(false);
     setSearchQuery('');
+  };
+
+  const startEditing = (item: ClipboardItem) => {
+    setEditingId(item.id);
+    setEditTitle(item.title);
+    setEditContent(item.content);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditTitle('');
+    setEditContent('');
+  };
+
+  const saveEdit = () => {
+    if (!editContent.trim()) return;
+    const finalTitle = editTitle.trim() || (editContent.trim().substring(0, 30) + (editContent.length > 30 ? '...' : ''));
+    
+    setItems(items.map(item => 
+      item.id === editingId 
+        ? { ...item, title: finalTitle, content: editContent }
+        : item
+    ));
+    cancelEditing();
   };
 
   const deleteItem = (id: string) => {
@@ -163,13 +190,38 @@ const App: React.FC = () => {
       <ul className="clipboard-list">
         {filteredItems.map((item) => (
           <li key={item.id} className="clipboard-item">
-            <div className="item-content">
-              <div className="item-title">{item.title}</div>
-            </div>
-            <div className="actions">
-              <button className="copy-btn" onClick={() => copyToClipboard(item.content)}>Copy</button>
-              <button className="delete-btn" onClick={() => deleteItem(item.id)}>Delete</button>
-            </div>
+            {editingId === item.id ? (
+              <div className="edit-mode" style={{ width: '100%' }}>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="Entry Name"
+                  style={{ display: 'block', width: '100%', marginBottom: '8px', padding: '8px', boxSizing: 'border-box' }}
+                />
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  rows={3}
+                  style={{ display: 'block', width: '100%', marginBottom: '8px', padding: '8px', boxSizing: 'border-box', resize: 'vertical' }}
+                />
+                <div className="actions">
+                  <button onClick={saveEdit}>Save</button>
+                  <button onClick={cancelEditing} style={{ marginLeft: '8px' }}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="item-content">
+                  <div className="item-title">{item.title}</div>
+                </div>
+                <div className="actions">
+                  <button className="copy-btn" onClick={() => copyToClipboard(item.content)}>Copy</button>
+                  <button onClick={() => startEditing(item)} style={{ backgroundColor: '#555' }}>Edit</button>
+                  <button className="delete-btn" onClick={() => deleteItem(item.id)}>Delete</button>
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>
